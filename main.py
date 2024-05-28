@@ -93,7 +93,7 @@ class App:
     def get_available_ports(self):
         ports = []
         for port in serial.tools.list_ports.comports():
-            ports.append(port.name)
+            ports.append("/dev/"+port.name)
         return ports
 
     def update_available_ports(self):
@@ -168,17 +168,23 @@ class App:
             self.last_key_press_timers[index].start()
 
     def release_all_keys(self, index):
-        # Release all keys individually
-        self.keyboard_controllers[index].release(Key.up)
-        self.keyboard_controllers[index].release(Key.down)
-        self.keyboard_controllers[index].release(Key.esc)
-        self.keyboard_controllers[index].release(Key.right)
-        self.keyboard_controllers[index].release(Key.left)
-
         # Release alphabet keys based on the last received data
         last_data = self.last_key_press_data[index]
         if last_data and len(last_data) == 1 and last_data.isalpha():
             self.keyboard_controllers[index].release(last_data)
+        elif last_data == "up":
+            self.keyboard_controllers[index].release(Key.up)
+        elif last_data == "down":
+            self.keyboard_controllers[index].release(Key.down)
+        elif last_data == "right":
+            self.keyboard_controllers[index].release(Key.right)
+        elif last_data == "left":
+            self.keyboard_controllers[index].release(Key.left)
+        elif last_data == "esc":
+            self.keyboard_controllers[index].release(Key.esc)
+        
+
+            
 
         # Release any other keys you may want to handle
 
